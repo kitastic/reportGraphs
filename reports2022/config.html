@@ -1,0 +1,70 @@
+"""
+	This file contains most of the constant global variables that can be accessed
+	with other programs.
+"""
+
+import pandas as pd
+import calendar
+
+
+'''
+    After importing and skewing unwanted data,
+    rows are dailies
+    columns are date, subtotal, ticket discount, and gift sale
+'''
+
+# hardcoded file paths for each year summary
+files = []
+files.append("totalSalesSummary2020.xlsx")
+files.append("totalSalesSummary2021.xlsx")
+files.append("totalSalesSummary2022.xlsx")
+files.append("2023totalSales031523.xlsx")
+
+
+# table is an array of an arrray; 
+# yearly array of dates ranging from 1/1/2020 - 1/1/2030
+table = []
+
+for i in range(2020,2031):
+    start = "1/1/" + str(i)
+    end = "12/31/" + str(i)
+    t = pd.date_range(start=start, end=end)
+    table.append(t)
+
+# this table is used for sharing data from multiple years
+# xtable is days of the leap year without actual year. 
+# used during plotting to plot multiple years
+
+def createDailyTable():
+    xDailyTables = []
+    
+    oddMonths = ["January", "March", "May", "July", "August", "October", "December"]
+    evenMonths = ["April", "June", "September", "November"]
+    
+    year = 2020
+    dailies = []
+    for i in range(len(files)):
+        for month in calendar.month_name[1:]:
+            if month in oddMonths:
+                for days in range(1,32):
+                   dailies.append(month + " " + str(days))
+            elif month in evenMonths:
+                for days in range(1,31):
+                    dailies.append(month + " " + str(days))
+            else:
+                # if leap year feb will have 29
+                if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0:            
+                    for days in range(1,30):
+                        dailies.append(month + " " + str(days))
+                else:
+                    for days in range(1,29):
+                        dailies.append(month + " " + str(days))
+            
+            if month == "December":
+                year = year + 1
+                xDailyTables.append(dailies.copy())
+                dailies.clear()
+            
+    return xDailyTables
+    
+                  
